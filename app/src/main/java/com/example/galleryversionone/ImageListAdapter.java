@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -36,9 +37,11 @@ public class ImageListAdapter extends PagedListAdapter<ImageDocument, ImageViewH
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ImageViewHolder holder, final int position) {
 
-        System.out.println(getItem(position).mAbsolutePath);
+
+        final ImageDocument imgDoc = getItem(position);
+        System.out.println(imgDoc.mAbsolutePath);
 
 //        InputStream inputStream = null;
 //        try {
@@ -56,11 +59,18 @@ public class ImageListAdapter extends PagedListAdapter<ImageDocument, ImageViewH
 
 
         Glide.with(mContext)
-                .load(getItem(position).mAbsolutePath)
+                .load(imgDoc.mAbsolutePath)
 //                .thumbnail(0.33f)
 //                .centerCrop()
                 .placeholder(R.drawable.image_placeholder)
                 .into(holder.mImageView);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(mContext, imgDoc.mDisplayName, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 
