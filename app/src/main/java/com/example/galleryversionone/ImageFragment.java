@@ -2,8 +2,6 @@ package com.example.galleryversionone;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.app.Activity;
 import android.os.Bundle;
 
@@ -13,14 +11,16 @@ import androidx.fragment.app.Fragment;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ImageFragment extends Fragment {
@@ -38,6 +38,8 @@ public class ImageFragment extends Fragment {
     private RecyclerView recyclerView;
 
     private AtomicInteger mOffset = new AtomicInteger(0);
+
+    private List<ImageDocument> imageList = new ArrayList<>();
 
     private static DiffUtil.ItemCallback<ImageDocument> DIFF_CALLBACK =
             new DiffUtil.ItemCallback<ImageDocument>() {
@@ -80,29 +82,45 @@ public class ImageFragment extends Fragment {
 
         recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
         if (mLayoutManager == null) {
-            mLayoutManager = new GridLayoutManager(activity, 5, RecyclerView.VERTICAL, false);
+            mLayoutManager = new GridLayoutManager(activity, 4, RecyclerView.VERTICAL, false);
         }
-        recyclerView.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(mLayoutManager);
 
         if (mAdapter == null) {
             mAdapter = new ImageListAdapter(DIFF_CALLBACK, activity);
         }
 
-//        mLayoutManager = new LinearLayoutManager(activity);
-//        recyclerView.setLayoutManager(mLayoutManager);
-//        mAdapter = new ImageListAdapter(DIFF_CALLBACK, activity);
-
-
         mViewModel.imageItemList.observe(getViewLifecycleOwner(), new Observer<PagedList<ImageDocument>>() {
             @Override
             public void onChanged(PagedList<ImageDocument> imageDocuments) {
                 mAdapter.submitList(imageDocuments);
+                imageList = imageDocuments;
+            }
+        });
+
+        mViewModel.selectedItemList$.observe(getViewLifecycleOwner(), new Observer<HashMap<String, Boolean>>() {
+            @Override
+            public void onChanged(HashMap<String, Boolean> stringBooleanHashMap) {
+                mAdapter.setSelectedImages(stringBooleanHashMap);
             }
         });
 
         recyclerView.setAdapter(mAdapter);
 
+        recyclerView.addOnItemTouchListener(new ImageListItemTouchListener(getActivity(), recyclerView, new ImageListItemTouchListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                System.out.println("single click detected ::" + position);
+                mViewModel.setSelectedList(imageList.get(position).mAbsolutePath.getPath(), true);
+                mAdapter.updateSelectedImageUI(getContext(), imageList.get(position).mAbsolutePath, (ImageView) view.findViewById(R.id.imageview));
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+                System.out.println("long press detected ::" + position);
+            }
+        }));
 
     }
 
