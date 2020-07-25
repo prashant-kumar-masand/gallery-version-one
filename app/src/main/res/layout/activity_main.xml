@@ -18,20 +18,20 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:text="Show Images"
-            android:id="@+id/btn_show_images"
+            android:text="Send Images"
+            android:id="@+id/btn_send_images"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="showImages"
+            android:onClick="sendImages"
             />
         <Button
-            android:text="Show Videos"
-            android:id="@+id/btn_show_videos"
+            android:text="Receive Images"
+            android:id="@+id/btn_receive_images"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="showVideos"
+            android:onClick="receiveImages"
             />
     </LinearLayout>
 

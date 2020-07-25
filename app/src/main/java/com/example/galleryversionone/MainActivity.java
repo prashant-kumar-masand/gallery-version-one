@@ -22,17 +22,25 @@ public class MainActivity extends AppCompatActivity {
             Log.v("main activity", "Permission is revoked");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         }
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager().beginTransaction().add(R.id.main_fragment, new ImageFragment()).commit();
-//        }
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().add(R.id.main_fragment, new ImageFragment()).commit();
+        }
     }
 
-    public void showImages(View view) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment, ImageFragment.newInstance()).commit();
+//    public void showImages(View view) {
+//        getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment, ImageFragment.newInstance()).commit();
+//    }
+//
+//    public void showVideos(View view) {
+//        getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment, VideoFragment.newInstance()).commit();
+//
+//    }
+
+    public void sendImages(View view){
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment, SendFilesFragment.newInstance()).addToBackStack(null).commit();
     }
 
-    public void showVideos(View view) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment, VideoFragment.newInstance()).commit();
+    public void receiveImages(View view){
 
     }
 }
