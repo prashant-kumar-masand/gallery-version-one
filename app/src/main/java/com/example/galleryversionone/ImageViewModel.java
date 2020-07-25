@@ -3,6 +3,7 @@ package com.example.galleryversionone;
 import android.app.Application;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -16,9 +17,6 @@ public class ImageViewModel extends AndroidViewModel {
 
     LiveData<PagedList<ImageDocument>> imageItemList;
     LiveData<PositionalDataSource<ImageDocument>> liveDataSource;
-    MutableLiveData<HashMap<String, Boolean>> selectedItemList$ = new MutableLiveData<>();
-    HashMap<String, Boolean> selectedItemList = new HashMap<>();
-
 
     public ImageViewModel(@NonNull Application application) {
         super(application);
@@ -32,15 +30,5 @@ public class ImageViewModel extends AndroidViewModel {
                 .build();
         imageItemList = (new LivePagedListBuilder(imageDataSourceFactory, config)).build();
     }
-
-//    public LiveData<HashMap<String, Boolean>> getSelectedList(String name, Boolean value) {
-//        return selectedItemList$;
-//    }
-
-    public void setSelectedList(String name, Boolean value) {
-        selectedItemList.put(name, value);
-        selectedItemList$.postValue(selectedItemList);
-    }
-
 
 }

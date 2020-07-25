@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -35,20 +36,33 @@ public class ImageDataSource extends PositionalDataSource<ImageDocument> {
                 ImageContract.PROJECTION_ALL,
                 null,
                 null,
-                        ImageContract.PROJECTION_ALL[2]+" DESC LIMIT " + limit + " OFFSET " + offset);
+                ImageContract.PROJECTION_ALL[4] + " DESC LIMIT " + limit + " OFFSET " + offset);
 
 //        cursor.moveToFirst();
-        List<ImageDocument> contacts= new ArrayList<ImageDocument>();
-        while (cursor.moveToNext()) {
-            Long id = cursor.getLong(cursor.getColumnIndexOrThrow(ImageContract.PROJECTION_ALL[0]));
-            String name = cursor.getString(cursor.getColumnIndexOrThrow(ImageContract.PROJECTION_ALL[1]));
+        List<ImageDocument> contacts = new ArrayList<ImageDocument>();
+        Long id;
+        String name;
+        Uri contentUri;
+        Long size;
+        String mimeType;
+        String dateAdded;
+        String dateTaken;
+        String bucketName;
 
-            Uri contentUri = ContentUris.withAppendedId(
+        while (cursor.moveToNext()) {
+            id = cursor.getLong(cursor.getColumnIndexOrThrow(ImageContract.PROJECTION_ALL[0]));
+            name = cursor.getString(cursor.getColumnIndexOrThrow(ImageContract.PROJECTION_ALL[1]));
+            contentUri = ContentUris.withAppendedId(
                     ImageContract.CONTENT_URI,
                     id
             );
+            size = cursor.getLong(cursor.getColumnIndexOrThrow(ImageContract.PROJECTION_ALL[2]));
+            mimeType = cursor.getString(cursor.getColumnIndexOrThrow(ImageContract.PROJECTION_ALL[3]));
+            dateAdded = cursor.getString(cursor.getColumnIndexOrThrow(ImageContract.PROJECTION_ALL[4]));
+            dateTaken = cursor.getString(cursor.getColumnIndexOrThrow(ImageContract.PROJECTION_ALL[5]));
+            bucketName = cursor.getString(cursor.getColumnIndexOrThrow(ImageContract.PROJECTION_ALL[6]));
             System.out.println(contentUri);
-            contacts.add(new ImageDocument(id, name, contentUri));
+            contacts.add(new ImageDocument(id, name, contentUri.toString(), size, mimeType, dateAdded, dateTaken, bucketName));
         }
         cursor.close();
         return contacts;

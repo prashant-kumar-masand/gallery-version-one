@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+
 import java.util.HashMap;
 
 import androidx.annotation.NonNull;
@@ -18,7 +20,7 @@ public class ImageListAdapter extends PagedListAdapter<ImageDocument, ImageViewH
 
     private Context mContext;
 
-    public HashMap<String, Boolean> selectedImages = new HashMap<String, Boolean>();
+    public HashMap<Long, ImageDocument> selectedImages = new HashMap<>();
 
     protected ImageListAdapter(@NonNull DiffUtil.ItemCallback<ImageDocument> diffCallback, Context context) {
         super(diffCallback);
@@ -36,25 +38,26 @@ public class ImageListAdapter extends PagedListAdapter<ImageDocument, ImageViewH
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, final int position) {
 
-
         final ImageDocument imgDoc = getItem(position);
-        if(selectedImages != null && selectedImages.containsKey(imgDoc.mAbsolutePath.getPath())){
-            updateSelectedImageUI(mContext, imgDoc.mAbsolutePath, holder.mImageView);
-        }else{
+        if (selectedImages != null && selectedImages.containsKey(imgDoc.id)) {
+            updateSelectedImageUI(mContext, Uri.parse(imgDoc.fileContentUri), holder.mImageView);
+        } else {
             holder.mImageView.setScaleType(ImageView.ScaleType.FIT_XY);
             Glide.with(mContext)
-                    .load(imgDoc.mAbsolutePath)
-                    .placeholder(R.drawable.image_placeholder)
+                    .load(Uri.parse(imgDoc.fileContentUri))
+//                    .thumbnail(0.1f)
+                    .transition(DrawableTransitionOptions.withCrossFade(300))
+//                    .placeholder(R.drawable.image_placeholder)
                     .into(holder.mImageView);
         }
 
     }
 
-    public void setSelectedImages(HashMap<String, Boolean> list){
+    public void setSelectedImages(HashMap<Long, ImageDocument> list) {
         selectedImages = list;
     }
 
-    public void updateSelectedImageUI(Context context, Uri uri, ImageView imageView){
+    public void updateSelectedImageUI(Context context, Uri uri, ImageView imageView) {
         imageView.setScaleType(ImageView.ScaleType.CENTER);
         Glide.with(context)
                 .load(uri)

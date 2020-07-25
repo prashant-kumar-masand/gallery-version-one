@@ -2,6 +2,7 @@ package com.example.galleryversionone;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+
 import android.app.Activity;
 import android.os.Bundle;
 
@@ -16,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ImageFragment extends Fragment {
 
     private ImageViewModel mViewModel;
+    private MainViewModel mainViewModel;
 
     private static final String TAG = "ImageFragment";
 
@@ -69,27 +70,32 @@ public class ImageFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
+
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         final Activity activity = getActivity();
+
+        mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         mViewModel = new ViewModelProvider(this).get(ImageViewModel.class);
 
         recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerview);
         if (mLayoutManager == null) {
-            mLayoutManager = new GridLayoutManager(activity, 4, RecyclerView.VERTICAL, false);
+
         }
+        mLayoutManager = new GridLayoutManager(activity, 4, RecyclerView.VERTICAL, false);
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(mLayoutManager);
 
         if (mAdapter == null) {
-            mAdapter = new ImageListAdapter(DIFF_CALLBACK, activity);
         }
+        mAdapter = new ImageListAdapter(DIFF_CALLBACK, activity);
+        recyclerView.setAdapter(mAdapter);
 
         mViewModel.imageItemList.observe(getViewLifecycleOwner(), new Observer<PagedList<ImageDocument>>() {
             @Override
@@ -99,21 +105,21 @@ public class ImageFragment extends Fragment {
             }
         });
 
-        mViewModel.selectedItemList$.observe(getViewLifecycleOwner(), new Observer<HashMap<String, Boolean>>() {
+        mainViewModel.getSelectedItemList().observe(getViewLifecycleOwner(), new Observer<HashMap<Long, ImageDocument>>() {
             @Override
-            public void onChanged(HashMap<String, Boolean> stringBooleanHashMap) {
-                mAdapter.setSelectedImages(stringBooleanHashMap);
+            public void onChanged(HashMap<Long, ImageDocument> imageDocumentHashMap) {
+                mainViewModel.getSelectedItemList().removeObserver(this);
+                mAdapter.setSelectedImages(imageDocumentHashMap);
             }
         });
 
-        recyclerView.setAdapter(mAdapter);
 
         recyclerView.addOnItemTouchListener(new ImageListItemTouchListener(getActivity(), recyclerView, new ImageListItemTouchListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 System.out.println("single click detected ::" + position);
-                mViewModel.setSelectedList(imageList.get(position).mAbsolutePath.getPath(), true);
-                mAdapter.updateSelectedImageUI(getContext(), imageList.get(position).mAbsolutePath, (ImageView) view.findViewById(R.id.imageview));
+                mainViewModel.setSelectedList(imageList.get(position).id, imageList.get(position));
+                mAdapter.notifyItemChanged(position);
             }
 
             @Override
@@ -121,7 +127,6 @@ public class ImageFragment extends Fragment {
                 System.out.println("long press detected ::" + position);
             }
         }));
-
     }
 
 }
