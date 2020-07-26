@@ -20,10 +20,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/btn_read_file_data"/>
 
-    <ListView
-        android:layout_margin="50dp"
-        android:id="@+id/list_transer_files"
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_margin="20dp"
+        android:id="@+id/rv_transer_files"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="300dp"/>
 
 </LinearLayout>

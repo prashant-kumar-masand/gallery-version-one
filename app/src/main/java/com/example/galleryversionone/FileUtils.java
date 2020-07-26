@@ -42,7 +42,7 @@ public class FileUtils {
         }
         width = Math.round((float) ratio * realImage.getWidth());
         height = Math.round((float) ratio * realImage.getHeight());
-        newBitmap = Bitmap.createScaledBitmap(realImage, width, height, filter);
+        newBitmap = Bitmap.createScaledBitmap(realImage, (int) maxImageSize, (int) maxImageSize, filter);
         return newBitmap;
     }
 
